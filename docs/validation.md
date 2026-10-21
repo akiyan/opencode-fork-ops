@@ -10,7 +10,9 @@
 - `packages/app`: composer の追加 Playwright ケース成功。日本語の指定値、入力欄の下の配置、再読み込み、セッション切替、未計測速度、入力0、390px幅、API失敗時のフォールバックを検証。
 - 全履歴集計: 63件の assistant と1件の user を含むセッションで確認。子セッションは加算しない。
 - Git remote: 認証情報・クエリを持つ HTTPS、SCP 形式、ローカル remote の扱いを実際の Git リポジトリで確認。
+- `packages/client`: VCS 更新の既存テストを拡張し、起動直後とブランチ切替後の repository 情報の取得・保持を確認。変更前には追加アサーションが失敗し、修正後には成功。
 - CLI の Web UI 同梱ビルド、Linux x64 バイナリの版番号確認。
+- 生成したバイナリを隔離した XDG データ領域とポート4496で実行し、同梱HTML、認証、セッション作成、統計API、実際の Git リポジトリ名とブランチを確認。試験用プロセスは確認後に終了。
 - デスクトップとスマートフォン幅のスクリーンショットを目視確認。画像は合成したテスト用セッション。
 
 ## 性能の参考値
@@ -36,6 +38,8 @@
 - `e2e/regression/composer.spec.ts:21`
 - `e2e/regression/review.spec.ts:396`
 - `e2e/regression/timeline-stream.spec.ts:1413,1445,1508,1822,1825`
+
+追加で `packages/client` の `bun test --conditions=browser test/solid-data.test.ts` を実行すると29件成功・1件失敗となる。失敗する `projects background user shell metadata from durable shell data` は未変更の v2.1.2 でも同じく失敗する。今回拡張した VCS ケースを指定した実行は成功。
 
 ローカルの Ubuntu 26.04 は使用中の Playwright のサポート対象外のため、ブラウザのインストール・実行時だけ `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64` を使用した。
 

@@ -5,7 +5,7 @@
 ## 構成
 
 - 本家: [anomalyco/opencode](https://github.com/anomalyco/opencode)
-- fork: [akiyan/opencode](https://github.com/akiyan/opencode)、運用ブランチ `akiyan-stats`
+- fork: [akiyan/opencode](https://github.com/akiyan/opencode)、運用ブランチ `akiyan`
 - このリポジトリ: 運用情報とスクリプト
 - 独自変更: プロンプト入力欄の下にリポジトリ・ブランチ・作業パスとセッション統計を3行表示
 

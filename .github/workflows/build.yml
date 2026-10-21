@@ -36,6 +36,11 @@ jobs:
           bun run check
           (cd packages/core && bun test test/session-stats.test.ts test/vcs.test.ts)
           (cd packages/server && bun test test/session-update.test.ts)
+          (cd packages/client && bun test --conditions=browser test/solid-data.test.ts --test-name-pattern 'preserves sibling catalogs')
+          cd packages/app
+          bun x playwright install --with-deps chromium
+          PLAYWRIGHT_BUILD=1 bun x playwright test e2e/regression/composer.spec.ts --project chromium --grep 'composer shows session totals' --workers=1 --reporter=line
+          cd ../..
           cd ..
           ./scripts/build.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -45,3 +50,4 @@ jobs:
             dist/*.tar.gz
             dist/*.sha256
           if-no-files-found: error
+          compression-level: 0

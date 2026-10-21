@@ -11,7 +11,7 @@
 ## upstream の更新
 
 - 自動的に最新版を本番へ反映しない。採用したいタグ／SHA を明示する。
-- fork 作業ツリーがクリーンな状態で `scripts/propose-update.sh <upstream-ref>` を実行する。新しい候補ブランチへ独自コミットを cherry-pick する。
+- fork の `akiyan` 作業ツリーがクリーンな状態で `scripts/propose-update.sh <upstream-ref>` を実行する。新しい候補ブランチへ独自コミットを cherry-pick する。
 - 競合は候補ブランチ内で解決する。処理を取りやめる場合は `git cherry-pick --abort`。公開中の運用ブランチは変更されない。
 - 検証後、親 SHA と独自コミット SHA、バージョンを lock に記録する。独自の追加入力が複数コミットになった場合は候補ブランチ内で1コミットへ squash する。
 - 運用ブランチを更新する際は直前の remote SHA を確認し、必要な場合だけ明示した `--force-with-lease` を使う。他の人の更新を上書きしない。
@@ -32,3 +32,9 @@
 ## 公開物
 
 ソース・運用ルール・固定 SHA・合成データによるスクリーンショットのみを公開する。API キー、remote の資格情報、実セッション DB・会話・ログ・パスワード・バックアップは公開しない。バイナリは Git にコミットせず Actions artifact または明示した release に置く。
+
+## 時雨堂 fork に合わせる方針
+
+参考: [shiguredo/deepseek-harness](https://github.com/shiguredo/deepseek-harness)、[本家との差分](https://github.com/shiguredo/deepseek-harness/compare/deepseek-ai:master...shiguredo)。2026-10-22 JST の確認では、既定ブランチは所有者名の `shiguredo` で、本家 master の上に独自コミット1つ（ahead 1 / behind 0）を載せている。
+
+こちらも所有者名の `akiyan` を運用・既定ブランチにし、本家の採用コミットの上に独自コミット1つを載せる。本家の追従元は upstream remote とし、fork 内に残る本家と同名のブランチが最新であるとは仮定しない。初版の基点は既存の利用環境に合わせた v2.1.2。変更をまとめ直す場合は独自コミットを amend / squash し、公開ブランチ更新は SHA を指定した lease で保護する。
