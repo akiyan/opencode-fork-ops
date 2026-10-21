@@ -11,6 +11,10 @@
 
 fork は **固定した upstream コミット + 独自コミット1つ** を維持します。公式の `dev` / `v2` ブランチには独自変更を載せません。採用する SHA は [config/source.lock.json](config/source.lock.json) で固定します。
 
+## ビルド済みバイナリ
+
+Linux x86_64 向けは [v2.1.2-akiyan.1](https://github.com/akiyan/opencode-fork-ops/releases/tag/v2.1.2-akiyan.1) から取得できます。アーカイブに含まれる `opencode` をこのリポジトリの `dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
+
 ## ビルド
 
 Bash 4 以降、Git、Bun 1.4.2、Python 3、tar が必要です。fork を隣の `../opencode` に配置します。
