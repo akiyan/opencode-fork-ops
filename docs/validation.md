@@ -4,6 +4,8 @@
 
 ## 成功した確認
 
+[GitHub Actions の最終実行](https://github.com/akiyan/opencode-fork-ops/actions/runs/39623793126)も成功。固定した `4c41195577cab90f12e93a5b858270dbdfe0e464` を別の Linux runner へ checkout し、標準チェック、core/server/client の対象テスト、実ブラウザテスト、Web UI 同梱ビルド、成果物のアップロードを確認した。
+
 - ルートの `bun run check`: lint と全34パッケージの型チェック成功。既存の lint warning は残る。
 - `packages/core`: `bun test test/session-stats.test.ts test/vcs.test.ts`、39件成功。
 - `packages/server`: `bun test test/session-update.test.ts`、3件成功。
