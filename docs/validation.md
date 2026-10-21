@@ -51,7 +51,7 @@
 
 初版の GitHub Actions は成果物をアップロードしたが、その運用は廃止した。リリースと保存済み Actions artifact はこの運用リポジトリから削除済み。初版のリリースは [akiyan/opencode](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.1) へ移し、チェックサムを照合した。今後もビルド成果物は `akiyan/opencode` に置く。
 
-## 中央配置の更新候補（本番反映前）
+## 中央配置の更新版
 
 `2.1.2-akiyan.2` は upstream dev の `870ab9dc5f2eb97c82024f56278f168353a0b068` を親にした独自コミット1つ。タグを基点にすると dev にない release コミットまで ahead に含まれたため、基点を修正した。GitHub compare API でも ahead が1であることを確認した。upstream の更新により behind の数は変化する。
 
@@ -62,6 +62,16 @@
 - Web UI を同梱した Linux x64 ビルド成功。バイナリの版番号は `2.1.2-akiyan.2`。
 - 最終修正後の composer ブラウザテスト2件成功。新規セッション、既存セッション、日本語の指定値、再読み込み、セッション切替、390px幅、未計測・API失敗時を確認した。
 - 添付画像と desktop・mobile・footer拡大・draft のキャプチャを同時に目視比較。最初の比較で発見した SVG mask URL の引用符不足を修正し、再キャプチャで3つのアイコンが描画されることを確認した。文字色は二次情報用のテーマトークンに揃えた。
-- 本番への切替は、以下の切替記録を追記するまで未実施。
+- 最終バイナリの隔離起動でも、同梱 UI・認証・セッション作成・統計 API・Git 情報を確認した。
 
 変更前後の production benchmark は各1回成功。firstCorrectObservedMs は 599.2 → 647.0、stableObservedMs は 621.7 → 658.7、wrongDestinationSamples は両方0。各1回のため性能の改善・悪化は断定しない。変更後測定は中央配置実装後、アイコンの描画と文字色の最終修正前に行った。
+
+## 中央配置版の本番切替（2026-10-22 06:47 JST）
+
+`2.1.2-akiyan.2` / `e5db476fcd319194b93aba0077f40395054e65e3` に切り替えた。systemd user service は active/running、切替後の自動再起動回数0。既存の全1セッション、DB、認証情報、URLとポートを保持し、同梱 Web UI のエントリーファイルが新版に変わったことを確認した。停止中に整合性確認済みの DB バックアップと旧バイナリ・設定を公開リポジトリ外へ保存した。
+
+ユーザー指定の Tailscale HTTPS URL を新しい Chromium コンテキストで開き、既存の認証情報でログインして実セッションを表示した。入力欄下の footer、3つのアイコン、統計表示、編集可能な入力欄を確認し、page error は0。実セッションのキャプチャはローカルだけに保存し、公開していない。利用中の旧タブ／PWA のキャッシュ状態は別なので、全ウィンドウを閉じて開き直す必要がある場合がある。
+
+[リリース v2.1.2-akiyan.2](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.2) のアーカイブ digest はローカルと一致: `f435dc03c9b099b5de4890e6fe6f28ca3daf0d7153d423c8383e8a5e8ac2b0cb`。運用リポジトリの releases と保存済み Actions artifacts は、どちらも0であることを確認した。
+
+[中央配置版の GitHub Actions](https://github.com/akiyan/opencode-fork-ops/actions/runs/39681327919) も成功した。固定ソースを別 runner で標準チェック、対象テスト、composer ブラウザテスト2件、Web UI 同梱バイナリのビルドまで確認した。成果物のアップロードは行っていない。
