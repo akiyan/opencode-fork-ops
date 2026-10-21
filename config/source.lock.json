@@ -4,8 +4,8 @@
   "upstream_commit": "870ab9dc5f2eb97c82024f56278f168353a0b068",
   "fork_repository": "https://github.com/akiyan/opencode.git",
   "fork_branch": "akiyan",
-  "fork_commit": "e5db476fcd319194b93aba0077f40395054e65e3",
-  "version": "2.1.2-akiyan.2",
+  "fork_commit": "e72081dae3f51edc6c5fd6581cf734630c94e88b",
+  "version": "2.1.2-akiyan.3",
   "channel": "akiyan",
   "bun": "1.4.2"
 }

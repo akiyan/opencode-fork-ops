@@ -13,14 +13,14 @@ fork は **固定した upstream dev コミット + 独自コミット1つ** を
 
 ## ビルド済みバイナリ
 
-Linux x86_64 向けは [v2.1.2-akiyan.2](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.2) から取得できます。アーカイブに含まれる `opencode` を fork 側の `../opencode/dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
+Linux x86_64 向けは [v2.1.2-akiyan.3](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.3) から取得できます。アーカイブに含まれる `opencode` を fork 側の `../opencode/dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
 
 ビルド済みバイナリの実行に Bun は不要です。このリポジトリ内で、GitHub CLI を使う場合の手順:
 
 ```sh
 mkdir -p ../opencode/dist
-gh release download v2.1.2-akiyan.2 --repo akiyan/opencode --pattern '*linux-x86_64.tar.gz*' --dir ../opencode/dist
-(cd ../opencode/dist && sha256sum -c opencode-2.1.2-akiyan.2-linux-x86_64.tar.gz.sha256 && tar -xzf opencode-2.1.2-akiyan.2-linux-x86_64.tar.gz)
+gh release download v2.1.2-akiyan.3 --repo akiyan/opencode --pattern '*linux-x86_64.tar.gz*' --dir ../opencode/dist
+(cd ../opencode/dist && sha256sum -c opencode-2.1.2-akiyan.3-linux-x86_64.tar.gz.sha256 && tar -xzf opencode-2.1.2-akiyan.3-linux-x86_64.tar.gz)
 ./scripts/run.sh
 ```
 
@@ -40,6 +40,15 @@ git -C ../opencode checkout <表示されたSHA>
 ```
 
 成果物は fork 側の `../opencode/dist/` に保存します。公開リリースの配置先は **akiyan/opencode** です。この運用リポジトリにはリリースやビルド成果物を保存しません。GitHub Actions の **Build fork** は検証のみを行います。
+
+## インストール済みの CLI
+
+既存サービスをこの独自版へ切り替えた環境では、作業ディレクトリで `opencode` を実行すると同じバックグラウンドサービスへ接続する。`opencode --version` で `akiyan` の版番号を確認できる。このサーバーの `opencode2` は同じバイナリを起動する互換ラッパー。
+
+```sh
+cd /path/to/project
+opencode
+```
 
 ## 試運転
 

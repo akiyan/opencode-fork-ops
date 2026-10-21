@@ -15,12 +15,14 @@
 | 累計 tok | 既存の Session.Info.tokens の input + output + reasoning + cache.read + cache.write。現在のコンテキスト占有量ではない |
 | キャッシュヒット | cache.read / (input + cache.read + cache.write)。入力0の場合は — |
 
-速度は既存の durable な text / reasoning / tool-input の開始イベントの最早時刻から、provider response body 終了 (`time.streamed`) までを測ります。初回出力待ち・終了後のツール実行・ユーザー待ちは含めません。開始イベントが先に届く場合があるため、プロバイダー内部で計測する厳密な decode 速度とは一致しません。
+速度は保存済みメッセージの最初の出力 (`time.firstOutput`) から、provider response body 終了 (`time.streamed`) までを測ります。初回出力待ち・終了後のツール実行・ユーザー待ちは含めません。最初の出力時刻は text / reasoning / tool-input の開始時に保存し、再試行でリセットします。イベントログの永続化が無効でも計測できます。
 
-失敗・retry メタデータのある呼び出し、必要な時刻や利用量のない履歴は速度集計から除きます。計測対象がなければ — を表示します。fork/import で引き継いだメッセージは件数に含みますが、コピー先に対応する開始イベントがない場合は速度に含みません。
+旧履歴では、最初の content が reasoning または tool で、その開始時刻が保存されている場合にだけ代用します。text だけの旧履歴など、開始時刻を復元できないものは — のままです。失敗・retry メタデータのある呼び出し、必要な時刻や利用量のない履歴も速度集計から除きます。計測対象がなければ — を表示します。fork/import のメッセージも必要な時刻が保存されていれば速度の対象です。
+
+本家のデバッグバーの TPS は直近の応答の output と answer/first-output の時刻を使います。この欄は reasoning を含むセッション全体の加重平均なので、値は一致しません。プロバイダー内部で計測する厳密な decode 速度とも異なります。
 
 件数・速度は現在の全 projected transcript から集計するので、ブラウザが読み込んだページ数に依存しません。巻き戻しを選択しただけでは保持された履歴も件数に含みます。履歴が実際に削除されたら件数は減ります。利用量は upstream の累計値をそのまま使用し、課金済みの過去利用を履歴件数に合わせて引き直しません。
 
 統計は実行中5秒・待機中30秒ごとと、完了時の更新で取得します。非表示のブラウザでは通常の query のバックグラウンド抑制が働きます。API 取得に失敗した場合、件数と速度は — にします。トークン内訳が未報告のプロバイダーは upstream が0へ正規化するため、「未報告」と「報告された0」を完全には区別できません。
 
-追加するのは読み取り API と VCS の optional な repository フィールドです。DB migration や新しい durable event は追加しません。
+読み取り API、VCS の optional な repository フィールド、assistant の optional な `time.firstOutput` を追加しています。DB migration や新しい durable event は追加しません。

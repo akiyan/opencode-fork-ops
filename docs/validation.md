@@ -75,3 +75,20 @@
 [リリース v2.1.2-akiyan.2](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.2) のアーカイブ digest はローカルと一致: `f435dc03c9b099b5de4890e6fe6f28ca3daf0d7153d423c8383e8a5e8ac2b0cb`。運用リポジトリの releases と保存済み Actions artifacts は、どちらも0であることを確認した。
 
 [中央配置版の GitHub Actions](https://github.com/akiyan/opencode-fork-ops/actions/runs/39681327919) も成功した。固定ソースを別 runner で標準チェック、対象テスト、composer ブラウザテスト2件、Web UI 同梱バイナリのビルドまで確認した。成果物のアップロードは行っていない。
+
+## tok/s の修正と Web チャンネル（2026-10-22 07:06 JST）
+
+`2.1.2-akiyan.3` / `e72081dae3f51edc6c5fd6581cf734630c94e88b` に切り替えた。初版の速度集計は event テーブルの開始イベントを参照したが、通常運用では `Bus.persist` が既定で false のためイベントログが空で、速度が常に null になっていた。全く同じ条件のテストを初版で確認できていなかった。
+
+修正版は投影済みメッセージを使う。今後の text/reasoning/tool-input の開始時刻を optional な `time.firstOutput` に保存し、再試行でリセットする。既存履歴では最初の reasoning/tool の保存時刻を使い、復元できない text-only の旧履歴は未計測として残す。イベントログが空でも速度が計算できる回帰テストを追加した。
+
+Web ビルド設定は未認識のチャンネル名を dev にしていた。独自チャンネル akiyan の Web UI は prod としてビルドし、CLI とサービスのチャンネル名は引き続き akiyan とする。左下の TPS/TTFT/TTFA/E2E は本家の debug extension の統計バー。開発サーバーで実行されていたわけではない。prod では左上にデバッグ切替アイコンを出さない。
+
+- 標準 `bun run check`: 全34パッケージ成功。
+- core の stats/projector/VCS: 56件成功。server の対象テスト: 3件成功。
+- client の再生成、Web UI 同梱 Linux x64 ビルド、隔離環境での認証付き API・セッション作成・統計 API の確認成功。
+- 実行中セッションの終了を待ち、旧バイナリ・設定・DB を非公開領域へバックアップして切替。全2セッション、既存 DB・認証・接続先を保持した。
+- 本番統計 API の既存2セッションで数値の速度を確認。Tailscale HTTPS URL の新規 Chromium コンテキストでも数値の tok/s、編集可能な入力欄、開発チャンネルのバッジがないことを確認した。page error 0、systemd active/running、NRestarts 0。
+- アーカイブ SHA-256: `f2075dea579a1def9edfe7eea1a1f735aa170329a4eff4f74990178750f1c85f`。
+
+本家 debug extension の TPS は直近の応答に対する output の速度で、今回のセッション全体・reasoning 込みの加重平均とは一致しない。
