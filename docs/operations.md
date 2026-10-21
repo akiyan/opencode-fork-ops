@@ -25,16 +25,32 @@
 - 切替対象・ポート・データパスを明示した作業として切り替える。既存サービスの接続先を誤って採用しないよう確認する。
 - ブラウザの再読み込み後に独自 UI と版番号を確認する。古い PWA キャッシュが残る場合は該当オリジンのサイトデータを確認する。
 
+## 配布先
+
+リリースとビルド成果物は **akiyan/opencode** にだけ置く。このリポジトリは運用ルールとスクリプトを管理し、GitHub Actions でもビルド成果物を保存しない。`scripts/publish-release.sh` は fork の固定コミットを target にして `akiyan/opencode` の Release を作る。
+
+## 稼働中サービスの更新
+
+カスタムチャンネルは既定の DB 名も変わるため、既存サービスへの切替では `OPENCODE_DB` に従来の DB の絶対パスを明示する。サービス設定もカスタムチャンネル用へ引き継ぎ、URL・ポート・パスワードを維持する。バックアップ・起動設定・実データは非公開のローカル領域に置く。
+
 ## ロールバック
 
 旧バイナリと旧設定へ戻す。upstream 更新で DB migration が入った場合は対応するバックアップも戻す。新しい DB を旧バイナリでそのまま開くことを前提にしない。今回の独自変更自体は DB migration を持たない。
 
 ## 公開物
 
-ソース・運用ルール・固定 SHA・合成データによるスクリーンショットのみを公開する。API キー、remote の資格情報、実セッション DB・会話・ログ・パスワード・バックアップは公開しない。バイナリは Git にコミットせず Actions artifact または明示した release に置く。
+ソース・運用ルール・固定 SHA・合成データによるスクリーンショットのみを公開する。API キー、remote の資格情報、実セッション DB・会話・ログ・パスワード・バックアップは公開しない。バイナリは Git にコミットせず `akiyan/opencode` の release に置く。`opencode-fork-ops` にはリリースやビルド成果物を保存しない。
 
 ## 時雨堂 fork に合わせる方針
 
 参考: [shiguredo/deepseek-harness](https://github.com/shiguredo/deepseek-harness)、[本家との差分](https://github.com/shiguredo/deepseek-harness/compare/deepseek-ai:master...shiguredo)。2026-10-22 JST の確認では、既定ブランチは所有者名の `shiguredo` で、本家 master の上に独自コミット1つ（ahead 1 / behind 0）を載せている。
 
 こちらも所有者名の `akiyan` を運用・既定ブランチにし、本家の採用コミットの上に独自コミット1つを載せる。本家の追従元は upstream remote とし、fork 内に残る本家と同名のブランチが最新であるとは仮定しない。初版の基点は既存の利用環境に合わせた v2.1.2。変更をまとめ直す場合は独自コミットを amend / squash し、公開ブランチ更新は SHA を指定した lease で保護する。
+
+## 本家との差分の検査
+
+`verify.sh` の親子 SHA 検査に加え、公開後に `scripts/verify-upstream.sh` を実行する。基点は **本家 dev のコミット** とし、GitHub トップページでも独自コミット1つだけになることを確認する。v2.1.2 のリリースタグには dev にない公式 release コミットがあったため、タグに独自1つを重ねるだけでは dev 比で ahead 2 になっていた。
+
+## ブラウザの更新
+
+組み込み Web UI の PWA は `skipWaiting: false` / `clientsClaim: false` で、旧版を使うタブが残っている間は更新を待つ。サービスの再起動とブラウザ画面の更新を混同しない。Web UI のタブやインストール済み PWA のウィンドウをすべて閉じてから開き直し、画面の表示も確認する。URL・認証・データを検証しただけで「画面まで確認済み」と報告しない。

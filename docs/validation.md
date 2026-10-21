@@ -1,6 +1,6 @@
 # 検証記録
 
-初版: 2026-10-22 JST、upstream v2.1.2 + 独自コミット1つ。正確な SHA は source.lock.json を参照。
+初版の記録: 2026-10-22 JST、upstream v2.1.2 + 独自コミット1つ。以下の初版の結果と、末尾の更新候補の結果は区別する。現在の固定 SHA は source.lock.json を参照。
 
 ## 成功した確認
 
@@ -45,6 +45,23 @@
 
 ローカルの Ubuntu 26.04 は使用中の Playwright のサポート対象外のため、ブラウザのインストール・実行時だけ `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64` を使用した。
 
-## 本番への影響
+## 初版の本番切替と成果物の保管先
 
-既存の opencode/opencode2 のバイナリ、サービス、設定、実セッション DB は切り替えていない。独自版の起動確認は別ポートと隔離データで行う。自動更新は運用スクリプトで無効にする。
+ユーザーの指示により、既存の systemd user service を `2.1.2-akiyan.1` に切り替えた。既存 DB、認証情報、ポート4096、Tailscale Serve の接続先を維持し、セッション一覧と統計 API の応答を確認した。独自 channel の既定 DB は別名になるため、service の `OPENCODE_DB` で既存 DB を明示している。切替前のバイナリ、設定、整合性を確認した DB バックアップは、公開リポジトリ外の保護されたディレクトリに保存した。
+
+初版の GitHub Actions は成果物をアップロードしたが、その運用は廃止した。リリースと保存済み Actions artifact はこの運用リポジトリから削除済み。初版のリリースは [akiyan/opencode](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.1) へ移し、チェックサムを照合した。今後もビルド成果物は `akiyan/opencode` に置く。
+
+## 中央配置の更新候補（本番反映前）
+
+`2.1.2-akiyan.2` は upstream dev の `870ab9dc5f2eb97c82024f56278f168353a0b068` を親にした独自コミット1つ。タグを基点にすると dev にない release コミットまで ahead に含まれたため、基点を修正した。GitHub compare API でも ahead が1であることを確認した。upstream の更新により behind の数は変化する。
+
+- 入力欄の外側中央に、リポジトリとパス、その下に実行統計と使用量を配置する。新規セッションにも表示する。
+- `bun run check`: 全34パッケージ成功。
+- app の型チェック成功。
+- core の対象テスト39件、server の対象テスト3件、client の VCS 対象テスト1件成功。
+- Web UI を同梱した Linux x64 ビルド成功。バイナリの版番号は `2.1.2-akiyan.2`。
+- 最終修正後の composer ブラウザテスト2件成功。新規セッション、既存セッション、日本語の指定値、再読み込み、セッション切替、390px幅、未計測・API失敗時を確認した。
+- 添付画像と desktop・mobile・footer拡大・draft のキャプチャを同時に目視比較。最初の比較で発見した SVG mask URL の引用符不足を修正し、再キャプチャで3つのアイコンが描画されることを確認した。文字色は二次情報用のテーマトークンに揃えた。
+- 本番への切替は、以下の切替記録を追記するまで未実施。
+
+変更前後の production benchmark は各1回成功。firstCorrectObservedMs は 599.2 → 647.0、stableObservedMs は 621.7 → 658.7、wrongDestinationSamples は両方0。各1回のため性能の改善・悪化は断定しない。変更後測定は中央配置実装後、アイコンの描画と文字色の最終修正前に行った。

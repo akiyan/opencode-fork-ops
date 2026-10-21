@@ -14,7 +14,7 @@ cd -- "$source_dir"
 bun install --frozen-lockfile
 OPENCODE_VERSION=${locked[0]} OPENCODE_CHANNEL=${locked[1]} bun run packages/cli/script/build.ts --single --skip-install
 "$ops_dir/scripts/verify.sh"
-mkdir -p "$ops_dir/dist"
+mkdir -p "$source_dir/dist"
 python3 - "$source_dir" "$ops_dir" "${locked[0]}" <<'PY'
 import hashlib, json, pathlib, platform, shutil, sys, tarfile
 source, ops = map(pathlib.Path, sys.argv[1:3])
@@ -25,12 +25,12 @@ exe = executables[0]
 version = sys.argv[3]
 if any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-' for c in version):
     raise SystemExit('Invalid artifact version')
-archive = ops/'dist'/f'opencode-{version}-{platform.system().lower()}-{platform.machine()}.tar.gz'
+archive = source/'dist'/f'opencode-{version}-{platform.system().lower()}-{platform.machine()}.tar.gz'
 with tarfile.open(archive, 'w:gz') as tar:
     tar.add(exe, arcname='opencode')
     tar.add(ops/'config/source.lock.json', arcname='source.lock.json')
 archive.with_suffix(archive.suffix+'.sha256').write_text(hashlib.sha256(archive.read_bytes()).hexdigest()+'  '+archive.name+'\n')
-shutil.copy2(exe, ops/'dist/opencode')
+shutil.copy2(exe, source/'dist/opencode')
 print(archive)
 PY
-"$ops_dir/dist/opencode" --version
+"$source_dir/dist/opencode" --version

@@ -7,20 +7,20 @@
 - 本家: [anomalyco/opencode](https://github.com/anomalyco/opencode)
 - fork: [akiyan/opencode](https://github.com/akiyan/opencode)、運用ブランチ `akiyan`
 - このリポジトリ: 運用情報とスクリプト
-- 独自変更: プロンプト入力欄の下にリポジトリ・ブランチ・作業パスとセッション統計を3行表示
+- 独自変更: 新規／既存セッションのプロンプト入力欄の下に、リポジトリ・ブランチ・作業パスとセッション統計を中央揃えの2段で表示
 
-fork は **固定した upstream コミット + 独自コミット1つ** を維持します。公式の `dev` / `v2` ブランチには独自変更を載せません。採用する SHA は [config/source.lock.json](config/source.lock.json) で固定します。
+fork は **固定した upstream dev コミット + 独自コミット1つ** を維持します。公式の `dev` / `v2` ブランチには独自変更を載せません。採用する SHA は [config/source.lock.json](config/source.lock.json) で固定します。
 
 ## ビルド済みバイナリ
 
-Linux x86_64 向けは [v2.1.2-akiyan.1](https://github.com/akiyan/opencode-fork-ops/releases/tag/v2.1.2-akiyan.1) から取得できます。アーカイブに含まれる `opencode` をこのリポジトリの `dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
+Linux x86_64 向けは [v2.1.2-akiyan.2](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.2) から取得できます。アーカイブに含まれる `opencode` を fork 側の `../opencode/dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
 
 ビルド済みバイナリの実行に Bun は不要です。このリポジトリ内で、GitHub CLI を使う場合の手順:
 
 ```sh
-mkdir -p dist
-gh release download v2.1.2-akiyan.1 --repo akiyan/opencode-fork-ops --pattern '*linux-x86_64.tar.gz*' --dir dist
-(cd dist && sha256sum -c opencode-2.1.2-akiyan.1-linux-x86_64.tar.gz.sha256 && tar -xzf opencode-2.1.2-akiyan.1-linux-x86_64.tar.gz)
+mkdir -p ../opencode/dist
+gh release download v2.1.2-akiyan.2 --repo akiyan/opencode --pattern '*linux-x86_64.tar.gz*' --dir ../opencode/dist
+(cd ../opencode/dist && sha256sum -c opencode-2.1.2-akiyan.2-linux-x86_64.tar.gz.sha256 && tar -xzf opencode-2.1.2-akiyan.2-linux-x86_64.tar.gz)
 ./scripts/run.sh
 ```
 
@@ -39,7 +39,7 @@ git -C ../opencode checkout <表示されたSHA>
 ./scripts/build.sh
 ```
 
-成果物は `dist/` に保存します。GitHub Actions の **Build fork** を手動実行して、Linux x64 の成果物を取得することもできます。
+成果物は fork 側の `../opencode/dist/` に保存します。公開リリースの配置先は **akiyan/opencode** です。この運用リポジトリにはリリースやビルド成果物を保存しません。GitHub Actions の **Build fork** は検証のみを行います。
 
 ## 試運転
 

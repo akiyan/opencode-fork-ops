@@ -1,7 +1,8 @@
 # Fork operations
 
 - This repository owns operational rules; application changes belong in akiyan/opencode.
-- Keep akiyan exactly one commit ahead of the SHA in config/source.lock.json. Never rewrite official upstream refs.
+- Keep akiyan exactly one commit ahead of an adopted upstream dev commit. Verify the GitHub comparison against anomalyco:dev with scripts/verify-upstream.sh; a release tag can contain extra commits absent from dev. Never rewrite official upstream refs.
+- Release binaries and build artifacts belong only in akiyan/opencode. Do not create releases or retain Actions artifacts in opencode-fork-ops.
 - Use the user-approved Japanese labels: ターン, ステップ, キャッシュヒット.
 - Keep runtime data, credentials, logs, generated binaries, and local paths out of commits. Public examples must be fictional or explicitly supplied by the user.
 - Before publishing a new lock, verify the actual parent SHA, clean worktree, checks, tests, and binary build. Record limitations honestly.
