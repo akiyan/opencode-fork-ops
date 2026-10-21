@@ -15,6 +15,15 @@ fork は **固定した upstream コミット + 独自コミット1つ** を維�
 
 Linux x86_64 向けは [v2.1.2-akiyan.1](https://github.com/akiyan/opencode-fork-ops/releases/tag/v2.1.2-akiyan.1) から取得できます。アーカイブに含まれる `opencode` をこのリポジトリの `dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
 
+ビルド済みバイナリの実行に Bun は不要です。このリポジトリ内で、GitHub CLI を使う場合の手順:
+
+```sh
+mkdir -p dist
+gh release download v2.1.2-akiyan.1 --repo akiyan/opencode-fork-ops --pattern '*linux-x86_64.tar.gz*' --dir dist
+(cd dist && sha256sum -c opencode-2.1.2-akiyan.1-linux-x86_64.tar.gz.sha256 && tar -xzf opencode-2.1.2-akiyan.1-linux-x86_64.tar.gz)
+./scripts/run.sh
+```
+
 ## ビルド
 
 Bash 4 以降、Git、Bun 1.4.2、Python 3、tar が必要です。fork を隣の `../opencode` に配置します。
