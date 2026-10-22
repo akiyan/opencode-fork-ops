@@ -38,6 +38,7 @@ jobs:
           (cd packages/server && bun test test/session-update.test.ts)
           (cd packages/client && bun test --conditions=browser test/solid-data.test.ts --test-name-pattern 'preserves sibling catalogs')
           cd packages/app
+          bun test --conditions=solid --preload ./happydom.ts ./src/runtime/server/global-sync/utils.test.ts
           bun x playwright install --with-deps chromium
           PLAYWRIGHT_BUILD=1 bun x playwright test e2e/regression/composer.spec.ts --project chromium --grep 'composer shows session totals|new session shows centered' --workers=1 --reporter=line
           cd ../..

@@ -92,3 +92,16 @@ Web ビルド設定は未認識のチャンネル名を dev にしていた。�
 - アーカイブ SHA-256: `f2075dea579a1def9edfe7eea1a1f735aa170329a4eff4f74990178750f1c85f`。
 
 本家 debug extension の TPS は直近の応答に対する output の速度で、今回のセッション全体・reasoning 込みの加重平均とは一致しない。
+
+## カスタムモデルの表示（2.1.2-akiyan.4）
+
+DGX は設定とモデル API に存在し enabled/active でも、発売日未設定のモデルが Web UI の候補に表示されなかった。catalog の `time.released=0` が `1970-01-01` に変換され、モデル選択の「古いモデルを既定で隠す」規則に入っていた。
+
+`normalizeProviderList` で未設定の日付を空文字のまま扱い、既存の「発売日不明のモデルは表示する」規則を適用する。実在する発売日を捏造せず、利用者が明示的に非表示にした設定は維持する。
+
+- catalog 変換の既存テストに unknown date の回帰アサーションを追加。修正前は `1970-01-01` で失敗し、修正後は対象9件成功。既知の日付の変換と deprecated model の除外も維持した。
+- 標準 `bun run check`: 全34パッケージ成功。
+- Web UI 同梱ビルドと隔離環境での native smoke 成功。2026-10-22 16:47 JST、実行中セッションがないことを確認し、旧バイナリ・設定・整合性を確認した DB を非公開領域へ保存して切替。全2セッションと既存の認証・接続先を保持した。
+- Tailscale HTTPS URL を新規 Chromium コンテキストで開き、実セッションのモデル選択メニューに DGX / GLM-5.3-Flash-EXL3 が自動表示されることを確認。前版では同じメニューに OpenCode の無料モデルだけが表示されていた。
+- [リリース v2.1.2-akiyan.4](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.4) の SHA-256 はローカルと一致: `d34966ae44eb5d31c2eac8cf2fc311c4aebc2a68327c280602144305194ea15c`。
+- 設定済みモデルの通信先はユーザーのローカル設定で管理する。接続先や実セッションの画面は運用リポジトリへ追加しない。
