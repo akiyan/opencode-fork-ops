@@ -105,3 +105,19 @@ DGX は設定とモデル API に存在し enabled/active でも、発売日未�
 - Tailscale HTTPS URL を新規 Chromium コンテキストで開き、実セッションのモデル選択メニューに DGX / GLM-5.3-Flash-EXL3 が自動表示されることを確認。前版では同じメニューに OpenCode の無料モデルだけが表示されていた。
 - [リリース v2.1.2-akiyan.4](https://github.com/akiyan/opencode/releases/tag/v2.1.2-akiyan.4) の SHA-256 はローカルと一致: `d34966ae44eb5d31c2eac8cf2fc311c4aebc2a68327c280602144305194ea15c`。
 - 設定済みモデルの通信先はユーザーのローカル設定で管理する。接続先や実セッションの画面は運用リポジトリへ追加しない。
+
+## upstream dev 追従（2026-10-23）
+
+取得時点の本家 dev `7a62a466959bb49838b666bf5ba6222fb14b55cd`（v2.1.3 系）を採用。旧基点 `870ab9dc5f2eb97c82024f56278f168353a0b068` から76コミットを取り込み、独自変更を1コミット `68aae1c6d2504ae1826d3957500b89aa9c870954` に載せ直した。競合はなかった。統計 API・投影済み firstOutput・中央配置・カスタムモデルの未知発売日・akiyan の Web prod チャンネル設定を維持した。
+
+- Bun を本家の指定に合わせて1.4.4へ更新。旧1.4.2の実行ファイルはローカルに保持した。
+- 本家で追加された OpenAPI 整合性チェックに対応し、独自 API の仕様書も再生成。client 再生成後の差分なし、protocol の `check:generated` 成功。
+- 標準 `bun run check`: 全34パッケージ成功。公式 TypeScript 7.1 による `bun run typecheck:tsc` も全34パッケージ成功。
+- core の stats/projector/VCS/V1 migration: 92件成功。server 対象3件、client VCS対象1件、app catalog対象9件成功。
+- production build の composer ブラウザテスト2件成功。既存・新規セッション、指定値、狭い幅、再読込、切替、APIエラーを確認。
+- production benchmark（各1回）: firstCorrectObservedMs は 681.4 → 403.4、stableObservedMs は 693.5 → 427.4、wrongDestinationSamples は両方0。測定回数が少なく、静的サーバーも異なるため改善率は主張しない。
+- DB の差分は V1 import 処理と型定義の更新で、テーブル構造を変える migration はない。隔離した新規 DB と実 DB の online backup コピーの両方で、候補バイナリを起動して確認した。コピーの実行 claim と待機入力だけを無効にし、実処理を再開しない条件で2セッション・数値速度・SQLite quick_check を確認した。
+- 2026-10-23 09:09 JST に本番切替。実行中セッションがないことを再確認し、旧バイナリ・設定・DB と更新前後の source.lock を公開リポジトリ外へ保存した。全2セッション、認証、URL/ポートを保持。プロバイダー設定ファイルの切替前後のハッシュも一致した。
+- Tailscale HTTPS の実画面で数値の tok/s、編集可能な入力欄、prod のバッジ状態を確認。page error 0。DGX の GLM/DeepSeek がモデル選択に表示されることも確認した。systemd は active/running、NRestarts 0。
+- [リリース v2.1.3-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.1.3-akiyan.1) のアーカイブ digest はローカルと一致: `8635516fd965824432a03b3d6799e6bd10635a6789014e646dfbdce654e58a98`。
+- 公開後の compare API は ahead 1 / behind 1。検証中に進んだ dev の追加1コミットは今回の採用点には含めていない。運用リポジトリの releases と保存済み Actions artifacts はどちらも0。

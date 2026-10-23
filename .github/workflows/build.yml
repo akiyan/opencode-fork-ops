@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 2
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          bun-version: 1.4.2
+          bun-version: 1.4.4
       - name: Validate and build
         env:
           SOURCE_DIR: ${{ github.workspace }}/source
@@ -34,7 +34,9 @@ jobs:
           cd source
           bun install --frozen-lockfile
           bun run check
-          (cd packages/core && bun test test/session-stats.test.ts test/session-projector.test.ts test/vcs.test.ts)
+          bun run typecheck:tsc
+          (cd packages/protocol && bun run check:generated)
+          (cd packages/core && bun test test/session-stats.test.ts test/session-projector.test.ts test/vcs.test.ts test/v1-migration.test.ts)
           (cd packages/server && bun test test/session-update.test.ts)
           (cd packages/client && bun test --conditions=browser test/solid-data.test.ts --test-name-pattern 'preserves sibling catalogs')
           cd packages/app
