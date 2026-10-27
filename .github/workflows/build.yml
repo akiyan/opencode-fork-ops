@@ -36,13 +36,13 @@ jobs:
           bun run check
           bun run typecheck:tsc
           (cd packages/protocol && bun run check:generated)
-          (cd packages/core && bun test test/session-stats.test.ts test/session-projector.test.ts test/vcs.test.ts test/v1-migration.test.ts)
+          (cd packages/core && bun test test/session-stats.test.ts test/session-projector.test.ts test/vcs.test.ts test/v1-migration.test.ts test/database-migration.test.ts)
           (cd packages/server && bun test test/session-update.test.ts)
           (cd packages/client && bun test --conditions=browser test/solid-data.test.ts --test-name-pattern 'preserves sibling catalogs')
           cd packages/app
           bun test --conditions=solid --preload ./happydom.ts ./src/runtime/server/global-sync/utils.test.ts
           bun x playwright install --with-deps chromium
-          PLAYWRIGHT_BUILD=1 bun x playwright test e2e/regression/composer.spec.ts --project chromium --grep 'composer shows session totals|new session shows centered' --workers=1 --reporter=line
+          OPENCODE_CHANNEL=akiyan PLAYWRIGHT_BUILD=1 bun x playwright test e2e/regression/composer.spec.ts --project chromium --grep 'composer shows session totals|new session shows centered' --workers=1 --reporter=line
           cd ../..
           cd ..
           ./scripts/build.sh

@@ -121,3 +121,22 @@ DGX は設定とモデル API に存在し enabled/active でも、発売日未�
 - Tailscale HTTPS の実画面で数値の tok/s、編集可能な入力欄、prod のバッジ状態を確認。page error 0。DGX の GLM/DeepSeek がモデル選択に表示されることも確認した。systemd は active/running、NRestarts 0。
 - [リリース v2.1.3-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.1.3-akiyan.1) のアーカイブ digest はローカルと一致: `8635516fd965824432a03b3d6799e6bd10635a6789014e646dfbdce654e58a98`。
 - 公開後の compare API は ahead 1 / behind 1。検証中に進んだ dev の追加1コミットは今回の採用点には含めていない。運用リポジトリの releases と保存済み Actions artifacts はどちらも0。
+
+
+## upstream dev 追従（2026-10-27）
+
+取得時点の本家 dev `6aedf36ca307f97919f39d655de13b3ad5ccd24f`（v2.1.4 系）を採用。前回の基点から693コミットを取り込み、独自変更を1コミット `c0bab13272c9412fe962eb030fda1195d3e87a52` に載せ直した。入力欄・新規セッション・VCS同期・生成clientなどの競合を解消し、本家の音声入力・location選択・VCS再取得を維持した。
+
+- Bun は本家と同じ1.4.4。client・protocol再生成、protocol `check:generated` 成功。
+- 標準 `bun run check` 全35パッケージ、公式 `bun run typecheck:tsc` 全34パッケージ成功。
+- core の stats/projector/VCS/V1 migration/database migration は125件成功。server対象3件、client VCS対象1件、app catalog対象9件成功。
+- production fixture の composer 2件と本家 timeline geometry 1件、計3件成功。指定統計・中央配置・新規・狭幅・再読込・APIエラーに加え、入力欄が伸びてもtimeline末尾が正しい位置に保たれることを確認。
+- 性能測定ヘルパーは、本家がtimelineを入力欄の背後まで拡張した変更に未対応だった。旧計算では実際に末尾にいても152pxの差を返したため、可視領域の下端から `data-timeline-inset` を差し引くよう修正した。許容誤差は1pxのまま。
+- production benchmark は各1回。firstCorrectObservedMs 442.0 → 523.4、stableObservedMs 461.7 → 564.7、wrongDestinationSamples は両方0。単回測定・測定ヘルパーの変更があり、性能改善を主張しない。
+- 今回は blob/blob_ref の追加、allowanceの追加と削除、session_pendingの削除を含むDB migrationがある。旧版への復旧ではバイナリと移行前DBを組にして戻す。
+
+- Web UI 同梱 Linux x64 ビルドと新規DB native smoke成功。実DBのonline backupコピーでmigration・blob/blob_ref追加・全5セッション・数値速度・SQLite quick_checkを確認。移行前コピーを戻して、まだインストールされていた旧2.1.3版で再起動する復旧リハーサルも成功した。コピーの実行claimと待機入力だけを無効にし、ユーザーの実処理は開始していない。
+- 2026-10-27 16:35 JST、実行中セッションがないことを確認して本番を停止・バックアップ・切替・再起動した。旧バイナリ・設定・移行前DB・更新前後lockは非公開領域へ保存し、失敗時にはDBも旧版と組で戻す手順を用意した。既存5セッション、認証、URL/ポートを保持し、プロバイダー設定ファイルのハッシュも一致した。
+- Tailscale HTTPS の新規 Chromium で数値tok/s・編集可能な入力欄・開発バッジなしを確認、page error 0。モデル選択が本家でmenuからdialog/comboboxへ変わったため確認スクリプトを合わせ、DGXのGLM/DeepSeek両方の表示を確認した。モデルの推論やvision通信は今回の更新では再実行していない。systemd active/running、NRestarts 0。
+- [リリース v2.1.4-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.1.4-akiyan.1) にカスタマイズ説明と合成データのスクリーンショット3枚を掲載し、GitHub上で全画像の描画を確認した。アーカイブSHA-256はローカル・公開assetで一致: `51e8254a38be257a72fce4e2ff290d74d4b3126732f4f0859dbcd60440edd1f9`。
+- 公開後compareは ahead 1 / behind 1。検証中に進んだ本家の追加1コミットは今回の採用点には含めない。運用リポジトリのreleases・保存済みActions artifactsはどちらも0。CI定義へDB migration対象テストを追加したが、今回はGitHub Actionsの手動実行はしておらず、上記はローカル実行の結果である。
