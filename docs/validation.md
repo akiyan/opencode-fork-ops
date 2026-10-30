@@ -140,3 +140,25 @@ DGX は設定とモデル API に存在し enabled/active でも、発売日未�
 - Tailscale HTTPS の新規 Chromium で数値tok/s・編集可能な入力欄・開発バッジなしを確認、page error 0。モデル選択が本家でmenuからdialog/comboboxへ変わったため確認スクリプトを合わせ、DGXのGLM/DeepSeek両方の表示を確認した。モデルの推論やvision通信は今回の更新では再実行していない。systemd active/running、NRestarts 0。
 - [リリース v2.1.4-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.1.4-akiyan.1) にカスタマイズ説明と合成データのスクリーンショット3枚を掲載し、GitHub上で全画像の描画を確認した。アーカイブSHA-256はローカル・公開assetで一致: `51e8254a38be257a72fce4e2ff290d74d4b3126732f4f0859dbcd60440edd1f9`。
 - 公開後compareは ahead 1 / behind 1。検証中に進んだ本家の追加1コミットは今回の採用点には含めない。運用リポジトリのreleases・保存済みActions artifactsはどちらも0。CI定義へDB migration対象テストを追加したが、今回はGitHub Actionsの手動実行はしておらず、上記はローカル実行の結果である。
+
+
+## upstream dev 追従（2026-10-30）
+
+取得時点の本家 dev `95fc3c87ca438527388b773e4c788cb7f5eb0e5b`（v2.2.3 系）を採用。前回の基点から281コミットを取り込み、独自変更を1コミット `65b72b7bade284d425edc53581362e3fdf975d41` にまとめた。mock API・生成client・カタログ変換で競合を解消し、新規セッション画面で自動マージが作ったlocation識別子の重複も解消した。
+
+- 発売日未設定モデルの表示は本家が対応済みのため、独自のカタログ変更とそのテストを除き、本家の実装とテストへ統一した。
+- 本家の本文別保存 `session_part` に合わせ、旧履歴のtok/s開始時刻の代用もordinal 0から取得する。部品があるメッセージでは旧inline contentを読まず、複数部品による二重集計を防ぐ。既存の統計テストに保存方式切替後も3.5 tok/sを保つアサーションを追加し、修正前に誤って7 tok/sとなる失敗を再現、修正後10回連続成功した。
+- Bun は本家と同じ1.4.4。clientとprotocolを再生成、protocol `check:generated` 成功。
+- core のstats/projector/VCS/V1 migration/database migrationは130件成功。server対象3件、client VCS対象1件、app catalog対象15件成功。
+- schedule/session_partテーブル追加、session_v2.time_busy、scheduleのcheck/checks/failures/state追加を含む本家DB migrationがある。旧バイナリと移行前DBを組で戻す方針を維持する。
+
+- 標準 `bun run check` は全35パッケージ、公式 `bun run typecheck:tsc` は全34パッケージ成功。
+- production fixtureのcomposer対象2件と本家timeline geometry対象1件、計3件成功。指定統計・新規セッション・中央配置・狭幅・再読込・APIエラーと、入力欄の成長に追随する末尾位置を確認。
+- production benchmarkは各1回、firstCorrectObservedMs 662.7 → 512.8、stableObservedMs 677.6 → 551.1、wrongDestinationSamplesは両方0。単回測定のため性能改善率は主張しない。
+
+- Web UI同梱Linux x64ビルド、新規DBでの認証付きnative smoke、実DB online backupコピーでの移行が成功。コピーは全5セッション・数値tok/s・quick_checkと新規テーブルを確認し、旧版の復旧リハーサルでは全セッションの統計値が新版と完全一致することも確認した。コピーの実行claimと待機入力だけを無効にし、実処理を開始していない。
+
+- 2026-10-30 21:51 JST、実行中セッションがないことを再確認し、本番を停止・バックアップ・切替・再起動した。旧バイナリ・設定・整合性を確認した移行前DB・更新前後lockを非公開領域へ保存。全5セッション、認証、URL/ポートを保持し、プロバイダー設定ファイルのハッシュも一致した。
+- Tailscale HTTPSの新規Chromiumで数値tok/s・編集可能な入力欄・開発バッジなしを確認し、page error 0。DGXのGLM/DeepSeek両モデルも選択画面で確認した。推論・vision通信は今回の追従では再実行していない。systemd active/running、NRestarts 0。
+- [リリース v2.2.3-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.2.3-akiyan.1) に説明と合成データのスクリーンショット3枚を掲載し、公開ページで全画像の描画を確認。アーカイブSHA-256は公開assetとローカルで一致: `8b804fdadc1db5062bc401680259beefaeff56b24ab932ae26d4c6c609f4f58f`。
+- 公開後compareは ahead 1 / behind 0。本家由来のworkflowを実行しないユーザー方針に従い、`akiyan/opencode`のリポジトリActions設定が `enabled: false` のままであることを公開前後に確認した。運用リポジトリのreleasesと保存済みActions artifactsはどちらも0。今回はGitHub Actionsを実行しておらず、記載した検証はローカル実行である。

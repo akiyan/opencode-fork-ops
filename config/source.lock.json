@@ -1,11 +1,11 @@
 {
   "upstream_repository": "https://github.com/anomalyco/opencode.git",
   "upstream_ref": "dev",
-  "upstream_commit": "6aedf36ca307f97919f39d655de13b3ad5ccd24f",
+  "upstream_commit": "95fc3c87ca438527388b773e4c788cb7f5eb0e5b",
   "fork_repository": "https://github.com/akiyan/opencode.git",
   "fork_branch": "akiyan",
-  "fork_commit": "c0bab13272c9412fe962eb030fda1195d3e87a52",
-  "version": "2.1.4-akiyan.1",
+  "fork_commit": "65b72b7bade284d425edc53581362e3fdf975d41",
+  "version": "2.2.3-akiyan.1",
   "channel": "akiyan",
   "bun": "1.4.4"
 }

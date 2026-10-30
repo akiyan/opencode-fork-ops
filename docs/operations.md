@@ -25,6 +25,10 @@
 - 切替対象・ポート・データパスを明示した作業として切り替える。既存サービスの接続先を誤って採用しないよう確認する。
 - ブラウザで独自 UI と版番号を確認する。PWA の更新手順は末尾の「ブラウザの更新」を参照する。
 
+## GitHub Actions
+
+`akiyan/opencode` は GitHub 側のリポジトリ設定で Actions を無効にしておく。本家の workflow YAML は追従のため維持し、更新時に Actions を有効化しない。必要な検証はローカル、または `opencode-fork-ops` の `workflow_dispatch` で行う。
+
 ## 配布先
 
 リリースとビルド成果物は **akiyan/opencode** にだけ置く。このリポジトリは運用ルールとスクリプトを管理し、GitHub Actions でもビルド成果物を保存しない。`scripts/publish-release.sh` は fork の固定コミットを target にして `akiyan/opencode` の Release を作る。
