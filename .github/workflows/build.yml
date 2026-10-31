@@ -36,7 +36,7 @@ jobs:
           bun run check
           bun run typecheck:tsc
           (cd packages/protocol && bun run check:generated)
-          (cd packages/core && bun run script/test.ts test/session-stats.test.ts test/session-projector.test.ts test/vcs.test.ts test/v1-migration.test.ts test/database-migration.test.ts)
+          (cd packages/core && bun run script/test.ts test/session-stats.test.ts test/session-projector.test.ts test/vcs.test.ts test/v1-migration.test.ts test/database-migration.test.ts test/job.test.ts)
           (cd packages/server && bun test test/session-update.test.ts)
           (cd packages/client && bun test --conditions=browser test/solid-data.test.ts --test-name-pattern 'preserves sibling catalogs')
           cd packages/app
