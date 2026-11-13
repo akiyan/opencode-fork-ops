@@ -7,11 +7,13 @@
 - 本家: [anomalyco/opencode](https://github.com/anomalyco/opencode)
 - fork: [akiyan/opencode](https://github.com/akiyan/opencode)、運用ブランチ `akiyan`
 - このリポジトリ: 運用情報とスクリプト
-- 独自変更: 新規／既存セッションのプロンプト入力欄の下に、リポジトリ・ブランチ・作業パスとセッション統計を中央揃えの2段で表示
+- [独自変更の説明](opencode_akiyan_fork.md): 入力欄の下のリポジトリ情報・セッション統計、認証時のURL貼り付け形式の拡張
 
-fork は **固定した upstream dev コミット + 独自コミット1つ** を維持します。公式の `dev` / `v2` ブランチには独自変更を載せません。採用する SHA は [config/source.lock.json](config/source.lock.json) で固定します。
+fork は **固定した upstream dev コミット + 独自コミット1つ** を維持します。独自コミットのメッセージは [変更情報ページ](https://github.com/akiyan/opencode-fork-ops/blob/main/opencode_akiyan_fork.md) の URL のみとします。公式の `dev` / `v2` ブランチには独自変更を載せません。採用する SHA は [config/source.lock.json](config/source.lock.json) で固定します。
 
 ## ビルド済みバイナリ
+
+現在の固定ソースは `2.2.7-akiyan.1` です。この版のバイナリはローカルで検証済みで、公開リリースは未作成です。以下は従来の公開版です。
 
 Linux x86_64 向けは [v2.2.5-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.2.5-akiyan.1) から取得できます。アーカイブに含まれる `opencode` を fork 側の `../opencode/dist/opencode` に配置すると、以下の `scripts/run.sh` を利用できます。
 

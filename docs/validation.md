@@ -182,3 +182,19 @@ DGX は設定とモデル API に存在し enabled/active でも、発売日未�
 - Tailscale HTTPSの新規Chromiumで数値tok/s・編集可能な入力欄・開発バッジなしを確認し、page error 0。DGXのGLM/DeepSeek両モデルも選択画面で確認した。推論・vision通信は今回の追従では再実行していない。systemd active/running、NRestarts 0。
 - [リリース v2.2.5-akiyan.1](https://github.com/akiyan/opencode/releases/tag/v2.2.5-akiyan.1) にカスタマイズ説明と合成データのスクリーンショット3枚を掲載し、公開ページで全画像の描画を確認。アーカイブSHA-256は公開assetとローカルで一致: `db643f6c064007a93c1b52c6fdf008b1d70099e3dc7aaf7e50460f7ebacc6f09`。
 - 公開後compareは ahead 1 / behind 0。ソース側Actionsは公開前後とも `enabled: false` を維持。運用リポジトリのreleasesと保存済みActions artifactsはどちらも0。今回の検証はローカル実行で、GitHub Actionsは起動していない。手動CIの対象には今回確認したjobテストを追加した。
+
+
+## upstream dev 追従（2026-11-13）
+
+取得時点の本家 dev `fe3552441192ccbea91d117668e7f3a9eb097baf`（2.2.7 系）を採用。従来の基点から840コミットを取り込み、独自変更を1コミット `dac993179b568c1a2153d8c29c1e208fc7a6bf70` にまとめた。コミットメッセージは [変更情報ページ](../opencode_akiyan_fork.md) のURLのみとする。
+
+- 本家の認証後URL貼り付けを採用し、今回の独自追加はクエリだけ・スキームなしの入力受付に絞った。元の自動認証、GUI、TUI、CLIを維持する
+- composerの無料枠上限パネル、部品の別保存、本家のfirstToken記録を維持して競合を解消した。速度集計はfirstTokenを優先し、旧firstOutputと部品の保存時刻も読む。旧forkが変更していた性能測定ヘルパーは本家で削除されたため復活させていない
+- Bun 1.4.4でfrozen-lockfileによるインストール、Client・OpenAPIの再生成、protocolのcheck:generatedが成功
+- 標準 `bun run check` は全35タスク成功。`bun run typecheck:tsc` は全33タスク成功
+- Core対象202件、Server対象3件、Client対象38件のテストが成功。認証のURL入力5形式、訂正可能な不正入力、元のredirect_uri・PKCE・署名付きIDトークン、資格情報の保存とコード交換の重複防止を含む
+- production fixtureのChromiumテスト6件成功。統計表示の再読込・セッション切替・390px幅・API失敗時の表示、新規セッション、MCP貼り付けフォーム2ケース、pointer/touch双方のtimeline末尾位置を確認
+- Web UI同梱Linux x64バイナリ（`2.2.7-akiyan.1`）をビルド。隔離したデータ領域と新規DBで版番号、認証の拒否・成功、同梱HTML、セッション作成、統計API、SQLite quick_checkを確認
+- 変更前の旧ベンチマークはfirstCorrectObservedMs 208.0、stableObservedMs 233.9、wrongDestinationSamples 0。更新後は本家がstrobeへ移行しており、比較コマンドは `NoPresentSource`（DISPLAY / WAYLAND_DISPLAYなし）で拒否された。比較可能な更新後の計測値はなく、性能の改善・悪化は主張しない
+- 以前のコードとlockは両リポジトリのbackup-before-upstreamブランチへ保存。認証機能の元の未コミット差分もGit stashに保存している
+- この記録はローカル検証。実アカウントによるOpenAI認証、実セッションDBの移行・復旧、稼働中サービスへの切替、リリース作成、push、GitHub Actionsの実行は行っていない

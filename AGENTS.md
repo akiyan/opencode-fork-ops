@@ -2,6 +2,7 @@
 
 - This repository owns operational rules; application changes belong in akiyan/opencode.
 - Keep akiyan exactly one commit ahead of an adopted upstream dev commit. Verify the GitHub comparison against anomalyco:dev with scripts/verify-upstream.sh; a release tag can contain extra commits absent from dev. Never rewrite official upstream refs.
+- The fork commit message must be exactly `https://github.com/akiyan/opencode-fork-ops/blob/main/opencode_akiyan_fork.md`; maintain that page as the description of the complete fork diff, following the akiyan DeepSeek Harness style.
 - Release binaries and build artifacts belong only in akiyan/opencode. Do not create releases or retain Actions artifacts in opencode-fork-ops.
 - Use the user-approved Japanese labels: ターン, ステップ, キャッシュヒット.
 - Keep runtime data, credentials, logs, generated binaries, and local paths out of commits. Public examples must be fictional or explicitly supplied by the user.

@@ -13,6 +13,7 @@
 - 自動的に最新版を本番へ反映しない。採用したい dev 上の SHA を明示する。独自版の更新はこの手順で行い、公式向けの `opencode upgrade` では更新しない。
 - fork の `akiyan` 作業ツリーがクリーンな状態で `scripts/propose-update.sh <upstream-ref>` を実行する。新しい候補ブランチへ独自コミットを cherry-pick する。
 - 競合は候補ブランチ内で解決する。処理を取りやめる場合は `git cherry-pick --abort`。公開中の運用ブランチは変更されない。
+- 独自コミットのメッセージは `https://github.com/akiyan/opencode-fork-ops/blob/main/opencode_akiyan_fork.md` のみとする。[変更情報](../opencode_akiyan_fork.md)には本家との差分全体を記載する。
 - 検証後、親 SHA と独自コミット SHA、バージョンを lock に記録する。独自の追加入力が複数コミットになった場合は候補ブランチ内で1コミットへ squash する。
 - 運用ブランチを更新する際は直前の remote SHA を確認し、必要な場合だけ明示した `--force-with-lease` を使う。他の人の更新を上書きしない。
 - upstream ブランチ `dev` / `v2` に独自コミットを push しない。本家向け PR は今回の運用には不要。
