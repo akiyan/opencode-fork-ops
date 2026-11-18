@@ -198,3 +198,19 @@ DGX は設定とモデル API に存在し enabled/active でも、発売日未�
 - 変更前の旧ベンチマークはfirstCorrectObservedMs 208.0、stableObservedMs 233.9、wrongDestinationSamples 0。更新後は本家がstrobeへ移行しており、比較コマンドは `NoPresentSource`（DISPLAY / WAYLAND_DISPLAYなし）で拒否された。比較可能な更新後の計測値はなく、性能の改善・悪化は主張しない
 - 以前のコードとlockは両リポジトリのbackup-before-upstreamブランチへ保存。認証機能の元の未コミット差分もGit stashに保存している
 - この記録はローカル検証。実アカウントによるOpenAI認証、実セッションDBの移行・復旧、稼働中サービスへの切替、リリース作成、push、GitHub Actionsの実行は行っていない
+
+## さくらのAIエンジンのプロバイダー追加（2026-11-19）
+
+本家 dev `fe3552441192ccbea91d117668e7f3a9eb097baf` を基点とする独自コミットに、4つ目の独自変更として `sakura-ai-engine` を加えた。プロバイダーとモデルカタログの追加だけで、DB migration と公開 API の変更はない。
+
+- 独自変更は `packages/core/src/plugin/provider/sakura.ts` の新設と `packages/core/src/plugin/provider.ts` への登録。本家の同梱カタログを読むプラグインと同じ形で、プロバイダー・モデル・認証方法を登録する
+- 単体テスト `packages/core/test/plugin/provider-sakura.test.ts` を追加し、6件成功。プロバイダーの通信先と環境変数、tool call対応6モデルの件数と上限、モデルごとの推論レベルの選択肢、`max_tokens` と `reasoning_effort` の送信、Bearerトークンでの認証を確認した
+- plugin・model-resolver・models-dev の対象74ファイル682件が成功。読み取り専用のホーム領域ではロックファイルを作れず17件が失敗したため、書き込み可能な XDG 領域を指定して再実行し、全件成功を確認した。この17件は変更前から同じ理由で失敗していた
+- `bun run check` は35/35タスク成功（lint と全パッケージの型検査）。変更したファイルの oxlint と prettier も成功した
+- 実APIで確認した。`/v1/models` は13件を返すが文脈長やツール対応は返さないため、マニュアルの仕様をカタログへ固定した。`gpt-oss-120b` は `reasoning_effort: "none"` で400、Kimiは `none` を送ると思考が本文に混ざり、DeepSeekは `medium` で400、`none` は思考なしの正常応答だった
+- 実際のAPIへ、本家のOpenAI互換routeでツール呼び出しを含む2段階のループを送った。`preview/DeepSeek-V4.1-Flash-1017`（xhigh）、`preview/Qwen3.6-35B-A3B`（medium）、`preview/Kimi-K2.7-Code`（low）、`gpt-oss-120b`（medium）で、ツール呼び出し・ツール結果の返送・最終回答・reasoningの受信が成功した。思考過程をassistantメッセージとして再送しても受理されることを含む
+- 無料枠のレート制限に達した1回（DeepSeek xhigh）は時間をおいて再実行し、成功した。アカウントトークンはリポジトリ外の既存ファイルを読み、値と実応答は保存していない
+- 料金表がマニュアルに無いため、モデルのコストは0のまま。1リクエスト約5分の処理上限と、入力と `max_tokens` の合計が文脈長を超えると400になる制約は、本家の既存の見積もり処理では完全には避けられない
+- 利用者の指示により、fork の独自コミットを amend して `a349defadc2d204c371a4c280c9bee7ec9241c39` とし、`akiyan` ブランチへ push した。この運用リポジトリの記録と lock（`2.2.7-akiyan.2`）も push 済み。compare API は ahead 1、公開ブランチの SHA は lock と一致した。本家 dev はこの採用点より254コミット先へ進んでいる
+- Web UI同梱バイナリのビルド、稼働中サービスへの切替、リリース作成、GitHub Actionsの実行は行っていない。新しいプロバイダーを使うにはバイナリの再ビルドと切替が別途必要になる
+- この記録の点検と実API確認はローカル実行。検証用に bun 1.4.4 をワークスペース内の一時ディレクトリへ入れ、リポジトリは汚していない

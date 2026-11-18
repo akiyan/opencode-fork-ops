@@ -7,7 +7,7 @@
 - 本家: [anomalyco/opencode](https://github.com/anomalyco/opencode)
 - fork: [akiyan/opencode](https://github.com/akiyan/opencode)、運用ブランチ `akiyan`
 - このリポジトリ: 運用情報とスクリプト
-- [独自変更の説明](opencode_akiyan_fork.md): 入力欄の下のリポジトリ情報・セッション統計、認証時のURL貼り付け形式の拡張
+- [独自変更の説明](opencode_akiyan_fork.md): 入力欄の下のリポジトリ情報・セッション統計、認証時のURL貼り付け形式の拡張、さくらのAIエンジンのプロバイダー
 
 fork は **固定した upstream dev コミット + 独自コミット1つ** を維持します。独自コミットのメッセージは [変更情報ページ](https://github.com/akiyan/opencode-fork-ops/blob/main/opencode_akiyan_fork.md) の URL のみとします。公式の `dev` / `v2` ブランチには独自変更を載せません。採用する SHA は [config/source.lock.json](config/source.lock.json) で固定します。
 
